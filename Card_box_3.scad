@@ -1,15 +1,20 @@
-include <write.scad>
+//include <write.scad>
 readyToPrint=true;
 /* Personalization-Box*/
 //Choose a mana symbol
-symbole="phyrexian";//[black, blue, green, red, white,artifact,phyrexian,plainswalker,snow,tap,untap]
+symboleFile="red.dxf";//[black.dxf, blue.dxf, green.dxf, red.dxf, white.dxf,none.dxf]
 // a scale of 1 is ~25mm design volume
 symboleScale=1.75;
-lid_text="Lid_text";
+bottomText="Bottom Text";
 //Height of text in mm
-lid_text_height=6;
+bottomTextHeight=6;
 // this defines how far above the bottom of the box the text starts
-
+bottomOffset=2;
+topText="Top Text";
+topTextHeight=6;
+//this defines how far from the break the top text is
+topOffset=2;
+innerBoxHeight=bottomHalfHeight;
 
 card_thickness=.6;
 card_width=70;
@@ -41,14 +46,11 @@ module main_box(){
 			translate([-(card_vol_w+single_wall_thickness*2)/2,-(card_vol_l+single_wall_thickness*2)/2,-single_wall_thickness*2])cube([card_vol_w+single_wall_thickness*2,card_vol_l+single_wall_thickness*2,break_line*card_vol_h+single_wall_thickness*2+overlap_distance]);
 		}
 	translate([0,0,card_vol_h/2])cube([card_vol_w,card_vol_l,card_vol_h],center=true);
-	face();
-	rotate([0,0,180])face();	
 	if(dice_box){
 		difference(){
 			translate([-(card_vol_w+single_wall_thickness*6)/2,-(card_vol_l+single_wall_thickness*6)/2,-single_wall_thickness*3])cube([card_vol_w+single_wall_thickness*6,card_vol_l+single_wall_thickness*6,overlap_distance+single_wall_thickness*3]);
 		translate([-(card_vol_w+single_wall_thickness*2)/2,-(card_vol_l+single_wall_thickness*2)/2,-single_wall_thickness*3])cube([card_vol_w+single_wall_thickness*2,card_vol_l+single_wall_thickness*2,overlap_distance+single_wall_thickness*3]);
-		}
-		
+		}		
 	}
 	}
 }
@@ -59,9 +61,6 @@ module lid(){
 		}
 		translate([-seal_gap-(card_vol_w+single_wall_thickness*2)/2,-seal_gap-(card_vol_l+single_wall_thickness*2)/2,break_line*card_vol_h])cube([-seal_gap*2+card_vol_w+single_wall_thickness*2,-seal_gap*2+card_vol_l+single_wall_thickness*2,overlap_distance]);
 		translate([0,0,card_vol_h/2])cube([card_vol_w,card_vol_l,card_vol_h],center=true);
-	translate([0,0,card_vol_h+single_wall_thickness*2])write(lid_text,t=2*single_wall_thickness,h=lid_text_height,center=true, font="Magic.dxf");
-translate([0,card_vol_l/2+single_wall_thickness*2,card_vol_h+single_wall_thickness*2-(1-break_line)*card_vol_h/2])rotate([90,0,180])write(lid_text,t=2*single_wall_thickness,h=lid_text_height,center=true, font="Magic.dxf");
-	rotate([0,0,180])translate([0,card_vol_l/2+single_wall_thickness*2,card_vol_h+single_wall_thickness*2-(1-break_line)*card_vol_h/2])rotate([90,0,180])write(lid_text,t=2*single_wall_thickness,h=lid_text_height,center=true, font="Magic.dxf");
 	}
 }
 module dice_box_part(){
@@ -74,15 +73,7 @@ difference(){
 	}
 }
 
-module face(){
-translate([0,card_vol_l/2+single_wall_thickness*2,break_line*card_vol_h/2])
-rotate([90,0,0])linear_extrude(height=single_wall_thickness*2,convexity=10,center=true)
-scale([symboleScale,symboleScale,1])
-import(file = "Symbols.dxf",layer=symbole);
-}
-
 if(!readyToPrint){
-
 	main_box();
 	lid();
 	if(dice_box){
